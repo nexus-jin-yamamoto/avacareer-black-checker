@@ -44,13 +44,17 @@
   .btn:hover{background:#e01523;box-shadow:0 0 46px rgba(193,18,31,.6)}
   .diag-note{margin-top:14px;font-size:12px;color:#5c5568;text-align:center}
 
+  #loading{display:none;text-align:center;padding:50px 0}
+  .scan{font-family:'DotGothic16';color:var(--blood);font-size:15px;letter-spacing:.25em;animation:fl 1s infinite}
+  @keyframes fl{50%{opacity:.25}}
+  .scan-log{margin-top:22px;font-size:12.5px;color:var(--mut);line-height:2.4;min-height:120px;text-align:left;max-width:360px;margin-inline:auto}
+
+  #result{display:none}
   .result{max-width:640px;margin:70px auto 0;padding:0 24px}
   .rc{background:linear-gradient(180deg,#16121b,#0e0b12);border:1px solid var(--blood-dk);border-radius:6px;padding:38px 32px;position:relative;overflow:hidden}
-  .rc::before{content:"SAMPLE RESULT";position:absolute;top:14px;right:-38px;transform:rotate(35deg);background:#221d28;color:#6c6478;font-size:10px;letter-spacing:.25em;padding:5px 46px;font-family:'DotGothic16'}
   .rc h2{font-family:'Shippori Mincho',serif;font-size:17px;color:var(--mut);font-weight:500;margin-bottom:26px}
   .gauge{position:relative;height:22px;background:#1c1722;border-radius:20px;overflow:hidden;margin-bottom:10px}
-  .gauge i{position:absolute;inset:0;width:87%;border-radius:20px;background:linear-gradient(90deg,#5a0d13,var(--blood) 70%,#ff2f3f);animation:fill 2.4s cubic-bezier(.2,.8,.2,1) both;box-shadow:0 0 22px rgba(193,18,31,.7)}
-  @keyframes fill{from{width:0}}
+  .gauge i{position:absolute;inset:0;width:0;border-radius:20px;background:linear-gradient(90deg,#5a0d13,var(--blood) 70%,#ff2f3f);transition:width 2.2s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 22px rgba(193,18,31,.7)}
   .pct{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px}
   .pct .num{font-family:'Shippori Mincho',serif;font-size:64px;font-weight:800;color:var(--blood);text-shadow:0 0 30px rgba(193,18,31,.5);line-height:1}
   .pct .num small{font-size:22px}
@@ -58,6 +62,7 @@
   .flags{margin-top:28px;border-top:1px dashed #322b3b;padding-top:22px;display:grid;gap:12px}
   .flag{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;line-height:1.8;color:#c7c1d0}
   .flag em{font-style:normal;color:var(--blood);font-family:'DotGothic16';flex:none;margin-top:2px}
+  .again{display:block;text-align:center;margin-top:20px;color:#5c5568;font-size:12px;cursor:pointer;text-decoration:underline}
 
   .cta{max-width:760px;margin:90px auto 100px;text-align:center;padding:0 24px}
   .cta-box{border:1px solid #2a2431;border-radius:8px;padding:52px 32px;background:
@@ -87,29 +92,33 @@
   <p class="lead">「アットホームな職場」「やる気次第で高収入」——<br>
   美しい言葉の下に潜むサインを、AIが<b>求人票のURLだけ</b>で解析。<br>あなたの応募先の<b>ブラック企業確率</b>を数値化します。</p>
 
-  <div class="diag">
+  <div class="diag" id="form">
     <div class="diag-label">STEP 01 — 求人票のURLを貼るだけ</div>
     <div class="urlrow">
-      <input type="url" placeholder="https:// 気になる求人ページのURLを貼り付け">
-      <button class="btn" onclick="location.href='app.html'">診断する</button>
+      <input type="url" id="url" placeholder="https:// 気になる求人ページのURLを貼り付け">
+      <button class="btn" onclick="scan()">診断する</button>
     </div>
     <div class="diag-note">所要時間 約15秒 / 登録不要・完全無料</div>
   </div>
-</section>
 
-<section class="result">
-  <div class="rc">
-    <h2>診断結果 — 株式会社●●●● 営業職（未経験歓迎）</h2>
-    <div class="gauge"><i></i></div>
-    <div class="pct">
-      <div class="num">87<small>%</small></div>
-      <div class="rank">DANGER RANK : S<br>逃げてもいい数字です</div>
-    </div>
-    <div class="flags">
-      <div class="flag"><em>▲</em>「みなし残業45時間」の記載。基本給に固定残業代が含まれ、実質時給が最低賃金水準の可能性。</div>
-      <div class="flag"><em>▲</em>「幹部候補」「若手活躍中」の頻出。離職率が高く、常に補充採用を行っているパターンと一致。</div>
-      <div class="flag"><em>▲</em> 給与レンジが「25万〜80万円」と極端に広い。歩合依存・下限支給の恐れ。</div>
-    </div>
+  <div id="loading">
+    <div class="scan">▶ SCANNING…</div>
+    <div class="scan-log" id="log"></div>
+  </div>
+
+  <div id="result">
+    <section class="result">
+      <div class="rc">
+        <h2 id="rtitle">診断結果</h2>
+        <div class="gauge"><i id="bar"></i></div>
+        <div class="pct">
+          <div class="num"><span id="score">0</span><small>%</small></div>
+          <div class="rank" id="rank"></div>
+        </div>
+        <div class="flags" id="flags"></div>
+      </div>
+    </section>
+    <span class="again" onclick="reset()">別の求人を診断する</span>
   </div>
 </section>
 
@@ -124,5 +133,54 @@
 </section>
 
 <footer>© NexusAdvisors Inc. — AVACAREER LAB</footer>
+<script>
+const LOGS=["> 求人票の文言を解析中…","> 給与レンジの構造を検査中…","> 『アットホーム』検出。危険語彙と照合中…","> 過去の掲載履歴と突合中…","> 判定を確定しています…"];
+const FLAGPOOL=[
+ "「みなし残業」の記載。基本給に固定残業代が含まれ、実質時給が低水準の可能性。",
+ "「幹部候補」「若手活躍中」の頻出。常時補充採用のパターンと一致。",
+ "給与レンジが極端に広い。歩合依存・下限支給の恐れ。",
+ "「アットホームな職場」— 労働条件の具体性欠如を情緒表現で補うパターン。",
+ "休日日数の記載なし。年間休日105日未満の求人に多い省略形式。",
+ "「やる気次第で高収入」— 成果給比率が不透明な求人の典型表現。",
+ "同一求人が長期間掲載され続けている痕跡。定着率に懸念。"
+];
+function hash(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h}
+function scan(){
+  const u=document.getElementById('url').value.trim();
+  if(!u){document.getElementById('url').focus();return}
+  document.getElementById('form').style.display='none';
+  document.getElementById('loading').style.display='block';
+  const log=document.getElementById('log');
+  LOGS.forEach((l,i)=>setTimeout(()=>log.innerHTML+=l+"<br>",600+i*750));
+  setTimeout(()=>show(u),600+LOGS.length*750+400);
+}
+function show(u){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('result').style.display='block';
+  const h=hash(u);
+  const score=55+(h%43);
+  const rank=score>=85?"S":score>=75?"A":score>=65?"B":"C";
+  const msg=score>=85?"逃げてもいい数字です":score>=75?"応募前に要精査":score>=65?"面接で必ず確認を":"比較的安全圏です";
+  document.getElementById('rank').innerHTML="DANGER RANK : "+rank+"<br>"+msg;
+  document.getElementById('rtitle').textContent="診断結果 — "+u.replace(/^https?:\/\//,'').slice(0,40);
+  const fl=document.getElementById('flags');
+  fl.innerHTML='';
+  const n=score>=85?3:score>=70?2:1;
+  const start=h%FLAGPOOL.length;
+  for(let i=0;i<n;i++){const f=FLAGPOOL[(start+i*2)%FLAGPOOL.length];
+    fl.innerHTML+='<div class="flag"><em>▲</em>'+f+'</div>'}
+  setTimeout(()=>{document.getElementById('bar').style.width=score+"%"},100);
+  let c=0;const t=setInterval(()=>{c+=2;if(c>=score){c=score;clearInterval(t)}document.getElementById('score').textContent=c},40);
+}
+function reset(){
+  document.getElementById('result').style.display='none';
+  document.getElementById('form').style.display='block';
+  document.getElementById('url').value='';
+  document.getElementById('log').innerHTML='';
+  document.getElementById('flags').innerHTML='';
+  document.getElementById('bar').style.width='0';
+  document.getElementById('score').textContent='0';
+}
+</script>
 </body>
 </html>
