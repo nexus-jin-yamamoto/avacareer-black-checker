@@ -62,6 +62,12 @@
   .flags{margin-top:28px;border-top:1px dashed #322b3b;padding-top:22px;display:grid;gap:12px}
   .flag{display:flex;gap:12px;align-items:flex-start;font-size:13.5px;line-height:1.8;color:#c7c1d0}
   .flag em{font-style:normal;color:var(--blood);font-family:'DotGothic16';flex:none;margin-top:2px}
+  .flag.positive em{color:#2ecc71}
+  .flags-section{margin-top:28px;border-top:1px dashed #322b3b;padding-top:22px}
+  .flags-section h3{font-family:'DotGothic16';font-size:13px;letter-spacing:.15em;margin-bottom:14px}
+  .flags-section h3.neg{color:var(--blood)}
+  .flags-section h3.pos{color:#2ecc71}
+  .flags-grid{display:grid;gap:12px}
   .again{display:block;text-align:center;margin-top:20px;color:#5c5568;font-size:12px;cursor:pointer;text-decoration:underline}
 
   .cta{max-width:760px;margin:90px auto 100px;text-align:center;padding:0 24px}
@@ -115,7 +121,7 @@
           <div class="num"><span id="score">0</span><small>%</small></div>
           <div class="rank" id="rank"></div>
         </div>
-        <div class="flags" id="flags"></div>
+        <div id="flags"></div>
       </div>
     </section>
     <span class="again" onclick="reset()">別の求人を診断する</span>
@@ -135,7 +141,7 @@
 <footer>© NexusAdvisors Inc. — AVACAREER LAB</footer>
 <script>
 const LOGS=["> 求人票の文言を解析中…","> 給与レンジの構造を検査中…","> 『アットホーム』検出。危険語彙と照合中…","> 過去の掲載履歴と突合中…","> 判定を確定しています…"];
-const FLAGPOOL=[
+const NEGATIVES=[
  "【固定残業代】「みなし残業45時間含む」の記載を検出。月給25万円の場合、基本給は約18万円に下がり、時給換算で最低賃金を割る計算です。超過分が支払われない違法運用も多発しています。",
  "【離職率シグナル】「幹部候補」「若手活躍中」「20代が主役」が同一求人に複数回登場。厚労省の雇用動向調査で離職率30%超の企業に共通する募集文言パターンです。",
  "【年収レンジ詐称】提示年収が「300万〜800万円」と2.5倍以上の開き。下限が実態の平均年収で、上限はインセンティブ含む理論最大値（過去達成者0〜1人）という求人が大半です。",
@@ -154,6 +160,20 @@ const FLAGPOOL=[
  "【家族経営リスク】従業員数10名未満で役員に同姓が複数名。家族経営企業では労務管理が属人的になりやすく、有給取得率0%・パワハラの外部相談先なしの環境が懸念されます。",
  "【契約の曖昧さ】雇用形態が「契約社員（正社員登用あり）」だが登用率・基準の記載なし。実態は更新上限5年で雇い止め、正社員登用実績ゼロという求人が多く報告されています。",
  "【精神論の多用】「夢」「感謝」「成長」「仲間」が求人票に5回以上登場し、具体的な事業内容や数値目標の記載がない。待遇の悪さを精神論で正当化する企業文化を示唆します。"
+];
+const POSITIVES=[
+ "【社会保険完備】健康保険・厚生年金・雇用保険・労災保険の4点が明記されています。法定福利厚生の基本を満たしている点は安心材料です。",
+ "【年間休日120日以上】完全週休2日＋祝日に相当する休日数が確保されています。業界平均（約110日）を上回っており、ワークライフバランスが取りやすい環境です。",
+ "【給与レンジが明確】提示年収の上下幅が1.5倍以内に収まっており、入社後の実態と乖離しにくい誠実な提示です。",
+ "【残業時間の明記】月平均残業時間が具体的な数値で記載されています。情報開示に前向きな姿勢が読み取れます。",
+ "【有給取得率の公開】有給消化率が数値で明記されています。取得しやすい職場風土がある可能性が高いです。",
+ "【昇給・賞与の実績公開】前年度の昇給率や賞与実績が具体的に記載されています。評価制度が機能し、透明性のある給与体系と判断できます。",
+ "【勤務地が固定】転勤なし・勤務地が明確に1箇所に限定されています。生活設計が立てやすく、意図しない配置転換のリスクが低いです。",
+ "【研修制度の具体性】研修内容・期間・費用負担（会社全額負担）が明記されています。人材育成に投資する姿勢が読み取れます。",
+ "【離職率の公開】直近の離職率が数値で開示されています。ネガティブ情報も隠さない企業姿勢は信頼の指標になります。",
+ "【業務内容が具体的】担当業務・使用ツール・チーム構成が詳細に記載されています。入社後のミスマッチが起きにくい丁寧な求人設計です。",
+ "【副業・リモート可】副業許可やリモートワーク制度が明記されています。働き方の柔軟性がある現代的な労務管理の企業です。",
+ "【産育休実績あり】産休・育休の取得実績が男女別に記載されています。制度が形骸化しておらず、実際に利用されている証拠です。"
 ];
 function hash(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h}
 function scan(){
@@ -176,13 +196,26 @@ function show(u){
   document.getElementById('rtitle').textContent="診断結果 — "+u.replace(/^https?:\/\//,'').slice(0,40);
   const fl=document.getElementById('flags');
   fl.innerHTML='';
-  const n=score>=90?5:score>=80?4:score>=70?3:2;
-  const start=h%FLAGPOOL.length;
-  const used=new Set();
-  for(let i=0;i<n;i++){let idx=(start+i*3)%FLAGPOOL.length;
-    while(used.has(idx))idx=(idx+1)%FLAGPOOL.length;
-    used.add(idx);
-    fl.innerHTML+='<div class="flag"><em>▲</em>'+FLAGPOOL[idx]+'</div>'}
+  const negCount=score>=90?5:score>=80?4:3;
+  const posCount=score>=80?1:score>=70?2:3;
+  const totalMin=5;
+  const negN=Math.max(negCount,totalMin-posCount);
+  const posN=Math.max(posCount,totalMin-negN);
+  let html='<div class="flags-section"><h3 class="neg">⚠ マイナス評価（'+negN+'件検出）</h3><div class="flags-grid">';
+  const usedNeg=new Set();
+  for(let i=0;i<negN;i++){let idx=(h+i*3)%NEGATIVES.length;
+    while(usedNeg.has(idx))idx=(idx+1)%NEGATIVES.length;
+    usedNeg.add(idx);
+    html+='<div class="flag"><em>▲</em>'+NEGATIVES[idx]+'</div>'}
+  html+='</div></div>';
+  html+='<div class="flags-section"><h3 class="pos">◎ プラス評価（'+posN+'件検出）</h3><div class="flags-grid">';
+  const usedPos=new Set();
+  for(let i=0;i<posN;i++){let idx=(h+i*2)%POSITIVES.length;
+    while(usedPos.has(idx))idx=(idx+1)%POSITIVES.length;
+    usedPos.add(idx);
+    html+='<div class="flag positive"><em>◎</em>'+POSITIVES[idx]+'</div>'}
+  html+='</div></div>';
+  fl.innerHTML=html;
   setTimeout(()=>{document.getElementById('bar').style.width=score+"%"},100);
   let c=0;const t=setInterval(()=>{c+=2;if(c>=score){c=score;clearInterval(t)}document.getElementById('score').textContent=c},40);
 }
