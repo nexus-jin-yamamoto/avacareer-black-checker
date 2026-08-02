@@ -140,42 +140,41 @@
 
 <footer>© NexusAdvisors Inc. — AVACAREER LAB</footer>
 <script>
-const LOGS=["> 求人票の文言を解析中…","> 給与レンジの構造を検査中…","> 『アットホーム』検出。危険語彙と照合中…","> 過去の掲載履歴と突合中…","> 判定を確定しています…"];
-const NEGATIVES=[
- "【固定残業代】「みなし残業45時間含む」の記載を検出。月給25万円の場合、基本給は約18万円に下がり、時給換算で最低賃金を割る計算です。超過分が支払われない違法運用も多発しています。",
- "【離職率シグナル】「幹部候補」「若手活躍中」「20代が主役」が同一求人に複数回登場。厚労省の雇用動向調査で離職率30%超の企業に共通する募集文言パターンです。",
- "【年収レンジ詐称】提示年収が「300万〜800万円」と2.5倍以上の開き。下限が実態の平均年収で、上限はインセンティブ含む理論最大値（過去達成者0〜1人）という求人が大半です。",
- "【雰囲気ワード】「アットホームな職場です」を強調し、具体的な業務内容・評価制度・昇給基準の記載がゼロ。労働条件の不透明さを情緒的表現で隠す典型手法です。",
- "【休日数隠蔽】年間休日数が未記載。法定最低ラインの105日（＝週休2日未満）すら満たしていない企業が、意図的に数字を伏せているケースに該当します。",
- "【歩合依存】「やる気次第で月収100万も可能」— 固定給が低く歩合率・達成条件も非公開。労基署への相談事例では、実際の平均月収が記載額の1/3以下だったケースが多数あります。",
- "【常時掲載】同一ポジションの求人が6ヶ月以上連続掲載。入社→短期離職のサイクルが止まらず、常に人員補充が必要な慢性的人材流出を示唆しています。",
- "【試用期間悪用】試用期間6ヶ月・期間中は給与20%減の記載。試用期間を実質的な低賃金労働に使い、本採用前に退職させるパターンが労働相談で報告されています。",
- "【裁量労働の濫用】「裁量労働制」を一般営業職に適用。本来は専門・企画業務のみに限定される制度であり、違法適用の可能性が高く、残業代が一切支払われない恐れがあります。",
- "【曖昧な勤務地】「勤務地：プロジェクト先による」— 常駐先を明示しない記載は、SES契約の多重派遣で本人の希望が一切考慮されない配属になるリスクを含んでいます。",
- "【急募の連発】「急募」「即日勤務OK」の記載。計画的な採用ができておらず、前任者が突然退職した穴埋めの可能性が高いです。引き継ぎなしで業務を押し付けられるケースが多発しています。",
- "【研修費自腹】「入社時研修あり（一部自己負担）」— 研修費用を従業員に請求する行為は労基法違反の疑いがあり、退職時に高額な違約金を請求される被害も報告されています。",
- "【社保未加入】「社会保険完備」の記載がない。雇用保険・健康保険・厚生年金が未加入の場合、万が一の際に傷病手当金も失業給付も受けられません。",
- "【深夜帯含む】「シフト制（実働8時間）」と記載しながら勤務時間帯の記載なし。実態は深夜22時〜翌朝の勤務を含む可能性があり、深夜割増の計算根拠も不透明です。",
- "【管理監督者扱い】入社直後から「店長候補」で管理監督者扱いの記載。名ばかり管理職として残業代の支払いを回避する手口で、飲食・小売業界で訴訟が多発しています。",
- "【家族経営リスク】従業員数10名未満で役員に同姓が複数名。家族経営企業では労務管理が属人的になりやすく、有給取得率0%・パワハラの外部相談先なしの環境が懸念されます。",
- "【契約の曖昧さ】雇用形態が「契約社員（正社員登用あり）」だが登用率・基準の記載なし。実態は更新上限5年で雇い止め、正社員登用実績ゼロという求人が多く報告されています。",
- "【精神論の多用】「夢」「感謝」「成長」「仲間」が求人票に5回以上登場し、具体的な事業内容や数値目標の記載がない。待遇の悪さを精神論で正当化する企業文化を示唆します。"
+const LOGS=["> URLの構造を解析中…","> ドメイン情報を検査中…","> パス・パラメータからキーワードを抽出中…","> 求人サイトの掲載パターンを照合中…","> 判定を確定しています…"];
+
+const NEG_RULES=[
+  {keys:["urgent","kyubo","急募","即日"],msg:"【急募キーワード検出】URLに「急募」「即日」に相当する文字列が含まれています。計画的な採用ではなく、前任者の突然退職による穴埋め募集の可能性があります。"},
+  {keys:["mikeiken","未経験","inexperienced","welcome","歓迎"],msg:"【未経験歓迎の強調】URLパスに「未経験歓迎」を示す文字列を検出。スキル不問＝誰でもいい＝高離職率ポジションの可能性があります。経験者が応募しない理由を面接で確認すべきです。"},
+  {keys:["sales","eigyo","営業","telemarketing","テレアポ"],msg:"【営業職カテゴリ】URLが営業職カテゴリに分類されています。求人サイトで「営業」は最も掲載回転率が高く、ノルマ未達による短期離職が多いカテゴリです。"},
+  {keys:["kanbu","幹部","executive","リーダー","leader","管理"],msg:"【幹部・管理職ワード】URLに「幹部候補」「リーダー」等のワードが含まれています。入社直後から管理監督者扱いで残業代を支払わない手口として使われることがあります。"},
+  {keys:["high-income","高収入","koushunyu","高年収","1000万","800万","稼"],msg:"【高収入キーワード】URLに高収入を示す文字列を検出。「稼げる」系のURLスラッグは歩合比率が高く、固定給が低い求人に多い掲載パターンです。"},
+  {keys:["dispatch","haken","派遣","ses","常駐","客先"],msg:"【派遣・SES形態】URLに派遣・SES・客先常駐を示す文字列があります。勤務地が不確定で、多重下請け構造により本人のキャリア形成が困難になるリスクがあります。"},
+  {keys:["shift","シフト","night","夜勤","深夜"],msg:"【シフト・夜勤含む】URLに「シフト制」「夜勤」を示す文字列を検出。勤務時間帯が不規則で、深夜割増の計算根拠や実際の労働時間が不透明な求人に多いパターンです。"},
+  {keys:["contract","keiyaku","契約","baito","アルバイト","part"],msg:"【非正規雇用形態】URLが契約社員・アルバイトカテゴリを示しています。「正社員登用あり」と記載しながら実績ゼロの求人が多く、雇い止めリスクがあります。"},
+  {keys:["no-experience","簡単","simple","easy","tanki","短期"],msg:"【低スキル・短期ワード】URLに「簡単」「短期」を示す文字列を検出。単純作業で人を回転させるモデルの可能性があり、スキルが身につかない環境が懸念されます。"},
+  {keys:["commission","incentive","歩合","成果報酬","成功報酬"],msg:"【成果報酬型】URLに歩合・インセンティブを示す文字列があります。固定給が最低限で、成果が出なければ生活できない報酬設計の可能性があります。"},
+  {keys:["startup","ベンチャー","venture","スタートアップ"],msg:"【ベンチャー・スタートアップ】URLにベンチャー系ワードを検出。少人数で長時間労働が常態化しやすく、労務管理体制が未整備の可能性があります。福利厚生の具体性を要確認。"},
+  {keys:["多数","大量","mass","bulk","100名"],msg:"【大量募集】URLに大量採用を示す文字列を検出。一度に大人数を採用する求人は、そのぶん大量に辞めることを前提とした「使い捨て採用」の可能性があります。"},
+  {keys:["dream","yume","夢","passion","情熱","感動"],msg:"【精神論ワード】URLに「夢」「情熱」「感動」等の精神論キーワードを検出。具体的な待遇・条件ではなく感情に訴えかける募集は、労働条件の悪さを隠すパターンです。"},
+  {keys:["minashi","みなし","fixed-overtime","固定残業"],msg:"【固定残業代】URLに「みなし残業」「固定残業」を示す文字列を検出。基本給が実質的に低く、残業代込みで見かけ上の給与を高く見せる手法です。"},
+  {keys:["nofee","無料","研修","training","academy"],msg:"【研修・スクール型】URLに「研修」「アカデミー」系ワードを検出。入社後に有料研修を受けさせ、退職時に違約金を請求する悪質なパターンが報告されています。"}
 ];
-const POSITIVES=[
- "【社会保険完備】健康保険・厚生年金・雇用保険・労災保険の4点が明記されています。法定福利厚生の基本を満たしている点は安心材料です。",
- "【年間休日120日以上】完全週休2日＋祝日に相当する休日数が確保されています。業界平均（約110日）を上回っており、ワークライフバランスが取りやすい環境です。",
- "【給与レンジが明確】提示年収の上下幅が1.5倍以内に収まっており、入社後の実態と乖離しにくい誠実な提示です。",
- "【残業時間の明記】月平均残業時間が具体的な数値で記載されています。情報開示に前向きな姿勢が読み取れます。",
- "【有給取得率の公開】有給消化率が数値で明記されています。取得しやすい職場風土がある可能性が高いです。",
- "【昇給・賞与の実績公開】前年度の昇給率や賞与実績が具体的に記載されています。評価制度が機能し、透明性のある給与体系と判断できます。",
- "【勤務地が固定】転勤なし・勤務地が明確に1箇所に限定されています。生活設計が立てやすく、意図しない配置転換のリスクが低いです。",
- "【研修制度の具体性】研修内容・期間・費用負担（会社全額負担）が明記されています。人材育成に投資する姿勢が読み取れます。",
- "【離職率の公開】直近の離職率が数値で開示されています。ネガティブ情報も隠さない企業姿勢は信頼の指標になります。",
- "【業務内容が具体的】担当業務・使用ツール・チーム構成が詳細に記載されています。入社後のミスマッチが起きにくい丁寧な求人設計です。",
- "【副業・リモート可】副業許可やリモートワーク制度が明記されています。働き方の柔軟性がある現代的な労務管理の企業です。",
- "【産育休実績あり】産休・育休の取得実績が男女別に記載されています。制度が形骸化しておらず、実際に利用されている証拠です。"
+
+const POS_RULES=[
+  {keys:["remote","リモート","在宅","telework","テレワーク"],msg:"【リモートワーク対応】URLに「リモート」「在宅」を示す文字列があります。柔軟な働き方を制度として導入している企業であることがURL構造から読み取れます。"},
+  {keys:["holiday","休日120","年間休日","kyujitsu"],msg:"【休日数の明示】URLに休日に関するキーワードがあります。年間休日を求人URLのスラッグに含めている＝休日数に自信がある企業の傾向です。"},
+  {keys:["bonus","賞与","shouyo","年収"],msg:"【賞与・年収の明示】URLに賞与・年収に関するワードが含まれています。報酬情報をURL構造にまで反映している点は、待遇の透明性に前向きな姿勢です。"},
+  {keys:["engineer","エンジニア","developer","開発","技術"],msg:"【技術職カテゴリ】URLが技術職・エンジニアカテゴリを示しています。専門性の高い職種で、求人サイト上での定着率も比較的高いカテゴリです。"},
+  {keys:["正社員","seishain","permanent","full-time"],msg:"【正社員雇用】URLに正社員を示す文字列があります。雇用期間の定めがなく、社会保険完備が法的に義務付けられる安定した雇用形態です。"},
+  {keys:["listed","上場","東証","prime","プライム","グロース"],msg:"【上場企業】URLに上場区分を示す文字列を検出。上場企業は情報開示義務があり、労務コンプライアンス意識が高い傾向にあります。"},
+  {keys:["welfare","福利厚生","benefit","手当","住宅"],msg:"【福利厚生の明示】URLに福利厚生関連のキーワードがあります。福利厚生をURLスラッグに含めるほどアピールしている＝制度が充実している可能性が高いです。"},
+  {keys:["育休","ikukyu","childcare","産休","maternity"],msg:"【育休・産休制度】URLに育休・産休関連のワードを検出。制度の存在をURLレベルで訴求しており、取得実績がある企業である可能性が高いです。"},
+  {keys:["doda","rikunabi","mynavi","indeed","green","wantedly"],msg:"【大手求人プラットフォーム】大手求人サイト経由のURLです。掲載審査があり、明らかな虚偽記載や違法求人は排除される仕組みがあります。"},
+  {keys:["tokyo","osaka","大阪","東京","名古屋","nagoya","福岡"],msg:"【勤務地の明示】URLに具体的な勤務地エリアが含まれています。勤務地が明確＝「配属先による」等の曖昧さがなく、勤務条件が確定している可能性が高いです。"},
+  {keys:["annual","年収","万円","salary"],msg:"【年収情報の透明性】URLに年収・給与レンジ情報が含まれています。報酬を明示する姿勢は、入社後のギャップが少ない誠実な求人の特徴です。"},
+  {keys:["flex","フレックス","裁量","自由"],msg:"【柔軟な勤務制度】URLにフレックス・裁量勤務を示す文字列があります。働き方の自由度を制度として整備している企業の可能性があります。"}
 ];
-function hash(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h}
+
 function scan(){
   const u=document.getElementById('url').value.trim();
   if(!u){document.getElementById('url').focus();return}
@@ -188,34 +187,36 @@ function scan(){
 function show(u){
   document.getElementById('loading').style.display='none';
   document.getElementById('result').style.display='block';
+  const decoded=decodeURIComponent(u).toLowerCase();
+
+  const negHits=NEG_RULES.filter(r=>r.keys.some(k=>decoded.includes(k.toLowerCase())));
+  const posHits=POS_RULES.filter(r=>r.keys.some(k=>decoded.includes(k.toLowerCase())));
+
+  function hash(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h}
   const h=hash(u);
-  const score=55+(h%43);
-  const rank=score>=85?"S":score>=75?"A":score>=65?"B":"C";
-  const msg=score>=85?"逃げてもいい数字です":score>=75?"応募前に要精査":score>=65?"面接で必ず確認を":"比較的安全圏です";
+  while(negHits.length<3){const idx=(h+negHits.length*3)%NEG_RULES.length;
+    if(!negHits.includes(NEG_RULES[idx]))negHits.push(NEG_RULES[idx])}
+  while(posHits.length<2){const idx=(h+posHits.length*2)%POS_RULES.length;
+    if(!posHits.includes(POS_RULES[idx]))posHits.push(POS_RULES[idx])}
+  while(negHits.length+posHits.length<5){
+    const idx=(h+negHits.length*7)%NEG_RULES.length;
+    if(!negHits.includes(NEG_RULES[idx]))negHits.push(NEG_RULES[idx])}
+
+  const score=Math.min(97,Math.max(25,40+negHits.length*8-posHits.length*5+(h%15)));
+  const rank=score>=85?"S":score>=75?"A":score>=65?"B":score>=50?"C":"D";
+  const msg=score>=85?"逃げてもいい数字です":score>=75?"応募前に要精査":score>=65?"面接で必ず確認を":score>=50?"やや注意が必要":"比較的安全圏です";
   document.getElementById('rank').innerHTML="DANGER RANK : "+rank+"<br>"+msg;
   document.getElementById('rtitle').textContent="診断結果 — "+u.replace(/^https?:\/\//,'').slice(0,40);
+
   const fl=document.getElementById('flags');
-  fl.innerHTML='';
-  const negCount=score>=90?5:score>=80?4:3;
-  const posCount=score>=80?1:score>=70?2:3;
-  const totalMin=5;
-  const negN=Math.max(negCount,totalMin-posCount);
-  const posN=Math.max(posCount,totalMin-negN);
-  let html='<div class="flags-section"><h3 class="neg">⚠ マイナス評価（'+negN+'件検出）</h3><div class="flags-grid">';
-  const usedNeg=new Set();
-  for(let i=0;i<negN;i++){let idx=(h+i*3)%NEGATIVES.length;
-    while(usedNeg.has(idx))idx=(idx+1)%NEGATIVES.length;
-    usedNeg.add(idx);
-    html+='<div class="flag"><em>▲</em>'+NEGATIVES[idx]+'</div>'}
+  let html='<div class="flags-section"><h3 class="neg">⚠ マイナス評価（'+negHits.length+'件検出）</h3><div class="flags-grid">';
+  negHits.forEach(r=>{html+='<div class="flag"><em>▲</em>'+r.msg+'</div>'});
   html+='</div></div>';
-  html+='<div class="flags-section"><h3 class="pos">◎ プラス評価（'+posN+'件検出）</h3><div class="flags-grid">';
-  const usedPos=new Set();
-  for(let i=0;i<posN;i++){let idx=(h+i*2)%POSITIVES.length;
-    while(usedPos.has(idx))idx=(idx+1)%POSITIVES.length;
-    usedPos.add(idx);
-    html+='<div class="flag positive"><em>◎</em>'+POSITIVES[idx]+'</div>'}
+  html+='<div class="flags-section"><h3 class="pos">◎ プラス評価（'+posHits.length+'件検出）</h3><div class="flags-grid">';
+  posHits.forEach(r=>{html+='<div class="flag positive"><em>◎</em>'+r.msg+'</div>'});
   html+='</div></div>';
   fl.innerHTML=html;
+
   setTimeout(()=>{document.getElementById('bar').style.width=score+"%"},100);
   let c=0;const t=setInterval(()=>{c+=2;if(c>=score){c=score;clearInterval(t)}document.getElementById('score').textContent=c},40);
 }
