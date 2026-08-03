@@ -70,22 +70,56 @@
   .flags-grid{display:grid;gap:12px}
   .again{display:block;text-align:center;margin-top:20px;color:#5c5568;font-size:12px;cursor:pointer;text-decoration:underline}
 
-  .cta{max-width:760px;margin:90px auto 100px;text-align:center;padding:0 24px}
-  .cta-box{border:1px solid #2a2431;border-radius:8px;padding:52px 32px;background:
-    radial-gradient(ellipse at 50% 0%,rgba(193,18,31,.12),transparent 55%),var(--bg2)}
-  .cta h2{font-family:'Shippori Mincho',serif;font-size:clamp(22px,3.6vw,30px);font-weight:700;line-height:1.7}
-  .cta h2 b{color:var(--blood)}
-  .cta-sub{color:var(--mut);font-size:15px;line-height:2;margin:12px 0 32px}
-  .cta-merits{display:grid;gap:20px;text-align:left;max-width:520px;margin:0 auto 36px}
-  .cta-merit{display:flex;gap:14px;align-items:flex-start}
-  .cta-merit-icon{font-size:24px;flex:none;width:36px;text-align:center;line-height:1.6}
-  .cta-merit strong{display:block;font-size:15px;color:var(--ink);margin-bottom:4px}
-  .cta-merit p{font-size:13px;color:var(--mut);line-height:1.8;margin:0}
-  .cta-line-btn{display:inline-flex;align-items:center;gap:10px;background:#06C755;color:#fff;text-decoration:none;font-weight:700;font-size:16px;padding:18px 40px;border-radius:6px;letter-spacing:.04em;transition:.2s;box-shadow:0 4px 24px rgba(6,199,85,.3)}
+  .cta-section{max-width:800px;margin:80px auto 0;padding:0 24px}
+  .cta-bridge{text-align:center;margin-bottom:48px}
+  .cta-bridge h2{font-family:'Shippori Mincho',serif;font-size:clamp(20px,3.4vw,28px);font-weight:700;line-height:1.8}
+  .cta-bridge h2 b{color:var(--blood)}
+  .cta-bridge p{color:var(--mut);font-size:14px;line-height:2;margin-top:14px;max-width:560px;margin-inline:auto}
+
+  .cta-problem{background:var(--bg2);border:1px solid #2a2431;border-radius:8px;padding:36px 30px;margin-bottom:40px}
+  .cta-problem h3{font-family:'DotGothic16';font-size:13px;letter-spacing:.2em;color:var(--blood);margin-bottom:18px}
+  .cta-problem ul{list-style:none;display:grid;gap:12px}
+  .cta-problem li{font-size:14px;color:#c7c1d0;line-height:1.8;padding-left:20px;position:relative}
+  .cta-problem li::before{content:"×";position:absolute;left:0;color:var(--blood);font-weight:700}
+
+  .cta-solution{background:linear-gradient(180deg,#0f1a0f,#0b0a0d);border:1px solid #1a3a1a;border-radius:8px;padding:40px 30px;margin-bottom:40px}
+  .cta-solution h3{font-family:'Shippori Mincho',serif;font-size:clamp(18px,3vw,24px);font-weight:700;text-align:center;line-height:1.7;margin-bottom:8px}
+  .cta-solution h3 b{color:#06C755}
+  .cta-solution .sol-sub{text-align:center;color:var(--mut);font-size:13px;margin-bottom:30px}
+
+  .cta-flow{display:grid;gap:0;margin-bottom:32px;position:relative}
+  .cta-flow::before{content:"";position:absolute;left:19px;top:28px;bottom:28px;width:2px;background:#1a3a1a}
+  .cta-step{display:flex;gap:16px;align-items:flex-start;padding:14px 0}
+  .cta-step-num{width:38px;height:38px;border-radius:50%;background:#1a3a1a;color:#06C755;font-family:'DotGothic16';font-size:14px;display:flex;align-items:center;justify-content:center;flex:none;position:relative;z-index:1}
+  .cta-step-body strong{display:block;font-size:15px;color:var(--ink);margin-bottom:4px}
+  .cta-step-body p{font-size:13px;color:var(--mut);line-height:1.8;margin:0}
+
+  .cta-merits{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+  .cta-merit{background:var(--bg2);border:1px solid #2a2431;border-radius:6px;padding:20px 18px;text-align:left}
+  .cta-merit-icon{font-size:22px;display:block;margin-bottom:8px}
+  .cta-merit strong{display:block;font-size:14px;color:var(--ink);margin-bottom:6px}
+  .cta-merit p{font-size:12.5px;color:var(--mut);line-height:1.7;margin:0}
+
+  .cta-line-box{text-align:center;background:var(--bg2);border:1px solid #1a3a1a;border-radius:8px;padding:44px 30px;margin-bottom:24px}
+  .cta-line-box h3{font-family:'Shippori Mincho',serif;font-size:clamp(17px,2.8vw,22px);font-weight:700;line-height:1.7;margin-bottom:6px}
+  .cta-line-box h3 b{color:#06C755}
+  .cta-line-box .line-desc{color:var(--mut);font-size:13px;line-height:2;margin-bottom:28px}
+  .cta-line-btn{display:inline-flex;align-items:center;gap:10px;background:#06C755;color:#fff;text-decoration:none;font-weight:700;font-size:17px;padding:20px 48px;border-radius:8px;letter-spacing:.04em;transition:.2s;box-shadow:0 4px 24px rgba(6,199,85,.3)}
   .cta-line-btn:hover{background:#05b34c;transform:translateY(-2px);box-shadow:0 8px 32px rgba(6,199,85,.4)}
   .cta-line-btn svg{flex:none}
-  .cta-notes{display:flex;justify-content:center;gap:20px;margin-top:16px;flex-wrap:wrap}
+  .cta-notes{display:flex;justify-content:center;gap:18px;margin-top:18px;flex-wrap:wrap}
   .cta-notes span{font-size:12px;color:#7a7486}
+  .cta-reassure{margin-top:14px;font-size:12px;color:#5c5568;text-align:center;line-height:2}
+
+  .cta-faq{margin-top:40px;margin-bottom:60px}
+  .cta-faq h3{font-family:'DotGothic16';font-size:13px;letter-spacing:.2em;color:var(--mut);margin-bottom:18px;text-align:center}
+  .cta-faq dl{display:grid;gap:16px;max-width:600px;margin:0 auto}
+  .cta-faq dt{font-size:14px;color:var(--ink);font-weight:700}
+  .cta-faq dt::before{content:"Q. ";color:#06C755}
+  .cta-faq dd{font-size:13px;color:var(--mut);line-height:1.9;margin:4px 0 0 0;padding-left:22px}
+  .cta-faq dd::before{content:"A. ";color:var(--mut);font-weight:700;margin-left:-22px}
+
+  @media(max-width:560px){.cta-merits{grid-template-columns:1fr}}
   footer{border-top:1px solid #221d28;padding:26px;text-align:center;color:#4d4658;font-size:11px;letter-spacing:.1em}
   @media (max-width:560px){.urlrow{flex-direction:column}.pct{flex-direction:column;gap:10px;align-items:flex-start}}
   @media (prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -135,45 +169,129 @@
   </div>
 </section>
 
-<section class="cta" id="cta">
-  <div class="cta-box">
-    <h2>この診断結果、<b>次のアクション</b>につなげませんか？</h2>
-    <p class="cta-sub">LINEで「あなた専用のAIキャリアアドバイザー」が動き出します。</p>
+<section class="cta-section" id="cta">
 
+  <!-- ブリッジ：診断結果からの接続 -->
+  <div class="cta-bridge">
+    <h2>診断で<b>「危ない」</b>と分かっても、<br>じゃあどこに転職すればいいの？</h2>
+    <p>ブラック企業を避けるだけでは、転職は成功しません。<br>
+    「安全で、あなたに合う求人」を見つけることが本当のゴールです。</p>
+  </div>
+
+  <!-- 課題提起：一人で転職活動する限界 -->
+  <div class="cta-problem">
+    <h3>▶ こんな経験、ありませんか？</h3>
+    <ul>
+      <li>求人票だけでは本当の労働環境が分からない</li>
+      <li>転職サイトに登録したら営業電話が止まらなくなった</li>
+      <li>エージェントに急かされて妥協した転職をしてしまった</li>
+      <li>面接で聞きたいこと（残業時間・離職率）を聞けなかった</li>
+      <li>結局また同じような会社に入ってしまった</li>
+    </ul>
+  </div>
+
+  <!-- 解決策：AVACAREERの説明 -->
+  <div class="cta-solution">
+    <h3>本気で転職したいなら、<br><b>AIに「企業の本音」を聞かせる</b>という選択肢。</h3>
+    <p class="sol-sub">AVACAREER — AI×AI採用プラットフォーム</p>
+
+    <!-- 利用フロー -->
+    <div class="cta-flow">
+      <div class="cta-step">
+        <span class="cta-step-num">1</span>
+        <div class="cta-step-body">
+          <strong>LINEで友だち追加（30秒）</strong>
+          <p>アプリDL不要。いつものLINEからすぐ始められます。</p>
+        </div>
+      </div>
+      <div class="cta-step">
+        <span class="cta-step-num">2</span>
+        <div class="cta-step-body">
+          <strong>AIとチャットで希望条件を伝える</strong>
+          <p>年収・勤務地・働き方・譲れない条件をAIが丁寧にヒアリング。<br>「ブラック企業は絶対NG」だけでもOKです。</p>
+        </div>
+      </div>
+      <div class="cta-step">
+        <span class="cta-step-num">3</span>
+        <div class="cta-step-body">
+          <strong>AIアバターが企業に直接ヒアリング</strong>
+          <p>あなたの代わりにAIが企業側と会話。残業実態・昇給の仕組み・離職率など、<br>求人票に書かれない情報を事前に確認します。</p>
+        </div>
+      </div>
+      <div class="cta-step">
+        <span class="cta-step-num">4</span>
+        <div class="cta-step-body">
+          <strong>安全が確認された求人だけが届く</strong>
+          <p>ブラック診断のロジックで危険な求人は自動フィルター。<br>あなたの条件に合い、かつ安全性が確認された求人のみご紹介。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- メリットカード -->
     <div class="cta-merits">
       <div class="cta-merit">
         <span class="cta-merit-icon">🛡</span>
-        <div>
-          <strong>ブラック求人を自動フィルター</strong>
-          <p>あなたの診断履歴を学習し、危険シグナルのある求人を事前にブロック。安全な求人だけが届きます。</p>
-        </div>
+        <strong>ブラック求人を自動排除</strong>
+        <p>この診断と同じAIが裏側で常時稼働。危険シグナルのある求人は紹介しません。</p>
       </div>
       <div class="cta-merit">
-        <span class="cta-merit-icon">💬</span>
-        <div>
-          <strong>AIが企業に直接ヒアリング</strong>
-          <p>残業時間・離職率・昇給実績など、求人票に書かれない情報をAIアバターが企業側に確認してくれます。</p>
-        </div>
+        <span class="cta-merit-icon">🤖</span>
+        <strong>AIが面接前に企業を精査</strong>
+        <p>人間のエージェントが聞きづらい質問も、AIアバターなら遠慮なく企業に確認します。</p>
       </div>
       <div class="cta-merit">
-        <span class="cta-merit-icon">⚡</span>
-        <div>
-          <strong>LINEで完結、30秒で開始</strong>
-          <p>アプリのダウンロード不要。友だち追加するだけで、すぐにAIとチャットで転職相談が始まります。</p>
-        </div>
+        <span class="cta-merit-icon">📱</span>
+        <strong>LINEだけで転職活動が完結</strong>
+        <p>求人検索・相談・応募管理まですべてLINE上で。スキマ時間で転職が進みます。</p>
       </div>
-    </div>
-
-    <a class="cta-line-btn" href="https://lin.ee/XXXXXX" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M12 2C6.48 2 2 5.83 2 10.5c0 4.18 3.58 7.68 8.44 8.37.33.07.78.22.89.5.1.26.07.66.03.92l-.14.87c-.04.26-.2 1.02.89.56.58-.25 3.13-1.84 4.27-3.15C19.32 15.92 22 13.42 22 10.5 22 5.83 17.52 2 12 2z"/></svg>
-      LINEで無料相談をはじめる
-    </a>
-    <div class="cta-notes">
-      <span>✓ 完全無料</span>
-      <span>✓ 1タップで友だち追加</span>
-      <span>✓ いつでもブロック可</span>
+      <div class="cta-merit">
+        <span class="cta-merit-icon">🚫</span>
+        <strong>営業電話・しつこい連絡なし</strong>
+        <p>AIとのチャットだから、あなたのペースで進められます。急かされることは一切ありません。</p>
+      </div>
     </div>
   </div>
+
+  <!-- LINE追加ボックス -->
+  <div class="cta-line-box">
+    <h3>転職を考えているなら、<br>まずは<b>LINE</b>で話してみませんか？</h3>
+    <p class="line-desc">
+      「今すぐ転職したい」でも「いい求人があれば考えたい」でもOK。<br>
+      AIがあなたの状況に合わせて、最適なペースで求人をご紹介します。
+    </p>
+    <a class="cta-line-btn" href="https://lin.ee/XXXXXX" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M12 2C6.48 2 2 5.83 2 10.5c0 4.18 3.58 7.68 8.44 8.37.33.07.78.22.89.5.1.26.07.66.03.92l-.14.87c-.04.26-.2 1.02.89.56.58-.25 3.13-1.84 4.27-3.15C19.32 15.92 22 13.42 22 10.5 22 5.83 17.52 2 12 2z"/></svg>
+      LINEで転職相談をはじめる（無料）
+    </a>
+    <div class="cta-notes">
+      <span>✓ 完全無料（求職者に費用は一切かかりません）</span>
+      <span>✓ 1タップで友だち追加</span>
+      <span>✓ いつでもブロックOK</span>
+    </div>
+    <p class="cta-reassure">※ 有料職業紹介事業（許可番号準備中）<br>※ 個人情報は厳重に管理し、第三者に提供することはありません</p>
+  </div>
+
+  <!-- FAQ -->
+  <div class="cta-faq">
+    <h3>▶ よくある質問</h3>
+    <dl>
+      <dt>本当に無料ですか？</dt>
+      <dd>はい。AVACAREERは企業側から紹介手数料をいただく仕組みのため、求職者の方に費用は一切かかりません。</dd>
+
+      <dt>今すぐ転職する気がなくても使えますか？</dt>
+      <dd>もちろんです。「いい求人があれば話を聞きたい」という温度感の方も多くご利用いただいています。情報収集だけでもOKです。</dd>
+
+      <dt>しつこく連絡が来ませんか？</dt>
+      <dd>AIとのチャットなので、あなたが話しかけない限り一方的な連絡はしません。通知が気になればLINEのミュート機能も使えます。</dd>
+
+      <dt>どんな求人がありますか？</dt>
+      <dd>IT・営業・事務・企画・管理部門など幅広い職種を取り扱っています。AIが条件にマッチする求人のみをご紹介します。</dd>
+
+      <dt>個人情報は安全ですか？</dt>
+      <dd>暗号化通信で保護され、あなたの許可なく企業へ情報を開示することはありません。退会時にはすべてのデータを削除します。</dd>
+    </dl>
+  </div>
+
 </section>
 
 <footer>© NexusAdvisors Inc. — AVACAREER LAB</footer>
